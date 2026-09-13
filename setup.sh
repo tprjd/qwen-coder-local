@@ -8,25 +8,25 @@ model_repo="TelperionAI/Qwen3.8-27B-EXL3-5.5bpw"
 model_revision="af0c885473c466f0f9cf89dfb4d43d475635330c"
 model_name="Qwen3.8-27B-EXL3-5.5bpw"
 smoke_test=0
+with_searxng=0
 
 usage() {
-  echo "Usage: ./setup.sh [--smoke-test]"
+  echo "Usage: ./setup.sh [--smoke-test] [--with-searxng]"
   echo
   echo "Run without an option to install the server."
   echo "Use --smoke-test to create local configuration without large downloads."
+  echo "Use --with-searxng to configure the optional SearXNG container."
 }
 
-if (( $# > 1 )); then
-  usage >&2
-  exit 2
-fi
-if (( $# == 1 )); then
+while (( $# )); do
   case "$1" in
     --smoke-test) smoke_test=1 ;;
+    --with-searxng) with_searxng=1 ;;
     --help|-h) usage; exit 0 ;;
     *) usage >&2; exit 2 ;;
   esac
-fi
+  shift
+done
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -178,16 +178,20 @@ if (( ! smoke_test )); then
     exit 1
   fi
   require_command uv
-  require_command docker
   require_command nvidia-smi
   require_command curl
   require_command systemctl
+  if (( with_searxng )); then
+    require_command docker
+  fi
 fi
 
 mkdir -p "$root_dir/logs" "$root_dir/models" "$root_dir/run"
 prepare_tabbyapi
 prepare_credentials
-prepare_searxng
+if (( with_searxng )); then
+  prepare_searxng
+fi
 render_local_files
 
 if (( smoke_test )); then
@@ -209,4 +213,7 @@ install_service
 
 echo
 echo "Setup completed. Start the server with ./start.sh."
+if (( with_searxng )); then
+  echo "Start both services with ./start.sh --with-searxng."
+fi
 echo "For OpenCode, merge run/opencode-provider.json into your OpenCode configuration."

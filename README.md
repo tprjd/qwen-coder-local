@@ -13,7 +13,6 @@ Install these tools first:
 - Git
 - Python 3
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
-- Docker
 - `curl`
 
 Clone the repository with its TabbyAPI submodule. Use a path that does not contain spaces.
@@ -28,7 +27,7 @@ cd qwen-coder-local
 
 1. It checks out the pinned TabbyAPI revision and applies `patches/tabbyapi-local.patch`.
 2. It installs the locked Python 3.12 and CUDA 13 dependencies with uv.
-3. It generates local API keys and a SearXNG secret.
+3. It generates local API keys.
 4. It downloads the pinned model revision into the Hugging Face cache.
 5. It links the model into `models/`.
 6. It installs the `qwen-tabbyapi.service` user service.
@@ -46,14 +45,9 @@ Run these commands from the repository directory:
 ./stop.sh
 ```
 
-`start.sh` starts SearXNG and TabbyAPI. The first SearXNG start downloads its Docker image. TabbyAPI can take several minutes to load the model.
+`start.sh` starts TabbyAPI. The server can take several minutes to load the model.
 
-The services use these local addresses:
-
-- TabbyAPI: `http://127.0.0.1:5000/v1`
-- SearXNG: `http://127.0.0.1:8888`
-
-`start.sh` pins SearXNG to image version `2026.8.22-9fea41204` by its image digest.
+TabbyAPI uses `http://127.0.0.1:5000/v1`.
 
 Run the longer API checks after the server starts:
 
@@ -128,7 +122,27 @@ Run the repository safety check before each push:
 ./scripts/check-repository.sh
 ```
 
-## Recreate an older SearXNG container
+## Add SearXNG
+
+SearXNG is optional. Install Docker before you enable it.
+
+Configure SearXNG and generate its local secret:
+
+```bash
+./setup.sh --with-searxng
+```
+
+Start both TabbyAPI and SearXNG:
+
+```bash
+./start.sh --with-searxng
+```
+
+SearXNG uses `http://127.0.0.1:8888`. The start command pins image version `2026.8.22-9fea41204` by its image digest.
+
+`stop.sh` stops the SearXNG container if the container exists. The command also stops TabbyAPI.
+
+### Recreate an older SearXNG container
 
 Old installations can expose SearXNG port 8888 on all network interfaces. `status.sh` reports this condition.
 
@@ -137,7 +151,7 @@ Recreate the container once to restrict the port to localhost:
 ```bash
 ./stop.sh
 docker rm searxng
-./start.sh
+./start.sh --with-searxng
 ```
 
 ## License

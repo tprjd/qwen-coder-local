@@ -11,15 +11,17 @@ else
   echo "TabbyAPI process: stopped"
 fi
 
-if docker ps --filter "name=^searxng$" --filter status=running --format '{{.Names}}' | grep -q .; then
+if ! command -v docker >/dev/null 2>&1; then
+  echo "SearXNG: unavailable because Docker is not installed"
+elif docker ps --filter "name=^searxng$" --filter status=running --format '{{.Names}}' | grep -q .; then
   if searxng_container_matches_project; then
     echo "SearXNG: running at http://127.0.0.1:8888"
   else
     echo "SearXNG: running with a configuration mismatch"
-    echo "Recreate this container with ./stop.sh, docker rm searxng, and ./start.sh."
+    echo "Recreate this container with ./stop.sh, docker rm searxng, and ./start.sh --with-searxng."
   fi
 else
-  echo "SearXNG: stopped"
+  echo "SearXNG: not running (optional)"
 fi
 
 if curl --silent --fail --max-time 2 "$tabby_api_base_url/health"; then

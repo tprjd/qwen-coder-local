@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if docker ps -a --filter "name=^searxng$" --format '{{.Names}}' | grep -q .; then
+if command -v docker >/dev/null 2>&1 \
+  && docker ps -a --filter "name=^searxng$" --format '{{.Names}}' | grep -q .; then
   docker stop searxng >/dev/null
   echo "SearXNG stopped."
 fi

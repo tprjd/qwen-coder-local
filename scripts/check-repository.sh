@@ -38,7 +38,7 @@ if ! git -C tabbyAPI apply --unidiff-zero --check "$patch_file" >/dev/null 2>&1 
   fail "the TabbyAPI patch does not match the pinned revision"
 fi
 
-for script in setup.sh start.sh stop.sh status.sh benchmark.sh test-api.sh scripts/common.sh scripts/check-repository.sh; do
+for script in setup.sh start.sh stop.sh status.sh benchmark.sh test-api.sh scripts/common.sh scripts/check-repository.sh tests/optional-searxng.sh; do
   bash -n "$script"
 done
 
@@ -49,5 +49,7 @@ fi
 if ! grep -q 'searxng/searxng@sha256:' scripts/common.sh; then
   fail "scripts/common.sh does not pin the SearXNG image by digest"
 fi
+
+./tests/optional-searxng.sh
 
 echo "Repository check passed."
