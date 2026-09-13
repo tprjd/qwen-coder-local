@@ -4,6 +4,116 @@ This repository runs `TelperionAI/Qwen3.8-27B-EXL3-5.5bpw` through TabbyAPI and 
 
 The included configuration targets one NVIDIA RTX 5090 with 32 GB of VRAM. A GPU with less VRAM needs a smaller cache or a different model.
 
+## Model details
+
+| Field | Value |
+| --- | --- |
+| Full name | Qwen3.8-27B, EXL3 5.5 bpw (AWQ-smoothed) |
+| Model ID | `TelperionAI/Qwen3.8-27B-EXL3-5.5bpw` |
+| Author | [TelperionAI](https://huggingface.co/TelperionAI) |
+| Model page | [Hugging Face model page](https://huggingface.co/TelperionAI/Qwen3.8-27B-EXL3-5.5bpw) |
+| Base model | `Qwen/Qwen3.8-27B` |
+| Backend | ExLlamaV3 through TabbyAPI |
+| Quantization | EXL3, 5.5 bits per weight |
+| Model revision | `af0c885473c466f0f9cf89dfb4d43d475635330c` |
+
+The model page identifies the model as a TelperionAI quantization of `Qwen/Qwen3.8-27B`. The setup script downloads the pinned revision shown above.
+
+## Startup configuration
+
+`./start.sh` starts the generated `qwen-tabbyapi.service` user service. Its server command is:
+
+```text
+.venv/bin/python tabbyAPI/main.py --config config.yml
+```
+
+The complete committed `config.yml` is:
+
+```yaml
+network:
+  host: 127.0.0.1
+  port: 5000
+  disable_auth: false
+  disable_fetch_requests: true
+  send_tracebacks: false
+  api_servers: [OAI]
+  sse_ping_interval: 15
+
+logging:
+  log_prompt: false
+  log_generation_params: false
+  log_requests: false
+  log_chat_completion_requests: false
+
+model:
+  model_dir: models
+  inline_model_loading: false
+  use_dummy_models: false
+  model_name: Qwen3.8-27B-EXL3-5.5bpw
+  backend: exllamav3
+  max_seq_len: 131072
+  cache_size: 131072
+  cache_mode: "8,8"
+  tensor_parallel: false
+  gpu_split_auto: true
+  autosplit_reserve: [96]
+  chunk_size: 2048
+  output_chunking: true
+  max_batch_size: 1
+  vision: false
+  template_vars_default:
+    enable_thinking: true
+    preserve_thinking: true
+    reasoning_effort: medium
+  reasoning: true
+  reasoning_start_token: "<think>"
+  reasoning_end_token: "</think>"
+  start_in_reasoning: auto
+  tool_calls_in_reasoning: true
+  tool_format: qwen3_5
+
+draft_model:
+  draft_mode: mtp
+  draft_cache_mode: Q8
+  draft_num_tokens: 3
+  dynamic_draft: false
+
+sampling:
+  override_preset: qwen38_agent
+
+memory:
+  sysmem_recurrent_cache: 4096
+  sysmem_kv_cache: 0
+  cuda_malloc_async: true
+
+developer:
+  unsafe_launch: false
+  disable_request_streaming: false
+```
+
+The `qwen38_agent` sampler preset is also committed. Client-supplied values take precedence:
+
+```yaml
+temperature:
+  override: 1.0
+  force: false
+top_p:
+  override: 0.95
+  force: false
+top_k:
+  override: 20
+  force: false
+min_p:
+  override: 0.0
+  force: false
+presence_penalty:
+  override: 0.0
+  force: false
+repetition_penalty:
+  override: 1.0
+  force: false
+```
+
 ## Install the server
 
 Install these tools first:
