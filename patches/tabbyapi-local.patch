@@ -1,0 +1,49 @@
+diff --git a/common/auth.py b/common/auth.py
+index 5adf9ba..f17bce9 100644
+--- a/common/auth.py
++++ b/common/auth.py
+@@ -164,4 +164,2 @@ async def load_auth_keys(disable_from_config: bool):
+-        f"Your API key is: {_format_api_keys(AUTH_KEYS)}\n"
+-        f"Your admin key is: {AUTH_KEYS.admin_key}\n"
+-        "If these keys get compromised, make sure to delete api_tokens.yml "
+-        "and restart the server. Have fun!"
++        f"Loaded {len(AUTH_KEYS.api_key)} API key(s) and one admin key "
++        "from api_tokens.yml. TabbyAPI does not log key values."
+diff --git a/endpoints/OAI/types/common.py b/endpoints/OAI/types/common.py
+index 6737bea..2f6e64d 100644
+--- a/endpoints/OAI/types/common.py
++++ b/endpoints/OAI/types/common.py
+@@ -19,0 +20,3 @@ class UsageStats(BaseModel):
++    draft_accept: Optional[int] = None
++    draft_reject: Optional[int] = None
++    cached_tokens: Optional[int] = None
+diff --git a/endpoints/OAI/utils/common_.py b/endpoints/OAI/utils/common_.py
+index f7da2e6..9f19416 100644
+--- a/endpoints/OAI/utils/common_.py
++++ b/endpoints/OAI/utils/common_.py
+@@ -30,0 +31,3 @@ def get_usage_stats(
++        draft_accept=generation.get("draft_accept"),
++        draft_reject=generation.get("draft_reject"),
++        cached_tokens=generation.get("cached_tokens"),
+@@ -47,0 +51,17 @@ def aggregate_usage_stats(usage_stats_list: list[UsageStats]) -> UsageStats:
++    draft_accept = (
++        None
++        if any(us.draft_accept is None for us in usl)
++        else sum(us.draft_accept or 0 for us in usl)
++    )
++    draft_reject = (
++        None
++        if any(us.draft_reject is None for us in usl)
++        else sum(us.draft_reject or 0 for us in usl)
++    )
++    # Each choice shares the same cached prompt prefix. Keep the first value,
++    # as the prompt_tokens calculation above does.
++    cached_tokens = (
++        usl[0].cached_tokens
++        if all(us.cached_tokens is not None for us in usl)
++        else None
++    )
+@@ -57,0 +78,3 @@ def aggregate_usage_stats(usage_stats_list: list[UsageStats]) -> UsageStats:
++        draft_accept=draft_accept,
++        draft_reject=draft_reject,
++        cached_tokens=cached_tokens,

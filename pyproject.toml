@@ -1,0 +1,17 @@
+[project]
+name = "qwen-coder-local"
+version = "0.1.0"
+description = "Reproducible local Qwen3.8 server configuration"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "tabbyapi[cu13]",
+]
+
+[tool.uv]
+package = false
+environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
+
+[tool.uv.sources]
+tabbyapi = { path = "tabbyAPI" }

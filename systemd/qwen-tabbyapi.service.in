@@ -1,0 +1,17 @@
+[Unit]
+Description=Local Qwen3.8 ExLlamaV3 inference server
+After=default.target
+
+[Service]
+Type=simple
+WorkingDirectory=@PROJECT_DIR@
+ExecStart=@PROJECT_DIR@/.venv/bin/python @PROJECT_DIR@/tabbyAPI/main.py --config @PROJECT_DIR@/config.yml
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=90
+KillSignal=SIGTERM
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=append:@PROJECT_DIR@/logs/tabbyapi.log
+StandardError=append:@PROJECT_DIR@/logs/tabbyapi.log
+
+# The service starts only when start.sh requests it.

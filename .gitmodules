@@ -1,0 +1,4 @@
+[submodule "tabbyAPI"]
+	path = tabbyAPI
+	url = https://github.com/theroyallab/tabbyAPI.git
+	ignore = dirty

@@ -1,0 +1,23 @@
+.venv/
+
+# Credentials and generated local configuration
+api_tokens.yml
+client_api_key
+searxng/settings.yml
+
+# Downloaded models and runtime data
+models/*
+!models/.gitkeep
+logs/*
+!logs/.gitkeep
+run/*
+!run/.gitkeep
+
+# Python and tool caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Notes from the original machine-specific installation
+PLAN.md

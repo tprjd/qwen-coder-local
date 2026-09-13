@@ -1,0 +1,36 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "tabby-local": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "TabbyAPI ExLlamaV3",
+      "options": {
+        "baseURL": "http://127.0.0.1:5000/v1",
+        "apiKey": "{file:REPLACE_WITH_PROJECT_PATH/client_api_key}"
+      },
+      "models": {
+        "qwen3.8-27b-exl3": {
+          "name": "Qwen3.8 27B EXL3 5.5bpw",
+          "tool_call": true,
+          "reasoning": true,
+          "interleaved": "reasoning_content",
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          },
+          "variants": {
+            "fast": {
+              "reasoningEffort": "low"
+            },
+            "normal": {
+              "reasoningEffort": "medium"
+            },
+            "deep": {
+              "reasoningEffort": "xhigh"
+            }
+          }
+        }
+      }
+    }
+  }
+}
